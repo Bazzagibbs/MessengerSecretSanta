@@ -15,6 +15,7 @@ def usage():
     print("-s\t\tSelect: choose to include or exclude specific people in the group. \n\t\tYou will be prompted to "
           "choose before messages are sent.")
     print("-t\t\tTest: print out results instead of sending messages to participants.")
+    print("-m\t\tMessage: customize the message to send to participants.")
     print("\nTo use this program, you will be prompted to log in with a Facebook account. Don't use your main "
           "account if you are participating in the Secret Santa. You will then need to provide a Group Chat ID: "
           "\n\tmessenger.com/t/<this-is-the-group-chat-id>")
@@ -35,6 +36,9 @@ if len(sys.argv) != 1 and sys.argv[1] == "-h":
 
 testMode = "-t" in sys.argv
 selectMode = "-s" in sys.argv
+customMessageMode = "-m" in sys.argv
+messageText = "Hi! Your secret santa is {}!"
+
 
 # login to facebook here
 while True:
@@ -121,6 +125,10 @@ while len(myUserList) > 0:
     else:
         myUserList.pop(i)
 
+if customMessageMode and not testMode:
+    messageText = input("Message to send to participants > ")
+    if "{}" not in messageText:
+        messageText = messageText + " {}"
 
 # send a message to all participants with the name of the next person in the list
 if len(sortedParticipants) != 0:
@@ -135,7 +143,8 @@ if len(sortedParticipants) != 0:
             if testMode:
                 print("{} --> {}".format(thisUser.name, nextUser.name))
             else:
-                client.send(Message(text="Hi there! Your Secret Santa is {}!".format(nextUser.name)), thread_id=thisUser.uid,thread_type=ThreadType.USER)
+
+                client.send(Message(text=messageText.format(nextUser.name)), thread_id=thisUser.uid,thread_type=ThreadType.USER)
                 print("sent text to person {}".format(i))
         except FBchatException:
             print("Error sending message to {}".format(thisUser.name))
