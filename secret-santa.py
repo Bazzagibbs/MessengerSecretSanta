@@ -47,7 +47,7 @@ while True:
         password = input("Host password > ").rstrip()
         client = Client(username, password, None, 1)
     except FBchatException:
-        print("Login failed...")
+        print("Failed to log into {}".format(username))
     except:
         print("There has been an error with the client login system... \n"
               "Check fbchat/_state.py line 190, replace with \"revision = 1\"")
